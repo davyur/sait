@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D модели исторических деталей</title>
+<title>3D Каталог деталей</title>
 <style>
 :root{--bg:#f3f4f6;--card:#fff;--primary:#2563eb;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--radius:16px;--shadow:0 10px 30px -5px rgba(0,0,0,.08)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -111,7 +111,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 
 /* ============================================================
-   КОНФИГУРАЦИЯ GITHUB
+   КОНФИГУРАЦИЯ GITHUB (НАСТРОЕНО ПОД ВАШ РЕПОЗИТОРИЙ)
    ============================================================ */
 const GITHUB_USER = 'davyur';
 const GITHUB_REPO = 'sait';
@@ -124,7 +124,7 @@ const MODEL_EXTS = ['3mf', 'glb', 'gltf', 'stl'];
 const MAX_MEDIA = 20;
 
 /* ============================================================
-   УТИЛИТЫ ЗАГРУЗКИ (БЕЗ HEAD-ЗАПРОСОВ)
+   УТИЛИТЫ ЗАГРУЗКИ (ПРЯМЫЕ ССЫЛКИ, БЕЗ ПРОКСИ И HEAD)
    ============================================================ */
 async function fetchText(path) {
     try {
@@ -404,7 +404,7 @@ async function load3D(id) {
     const onError = () => {
         const div = document.createElement('div');
         div.className = 'viewer-placeholder';
-        div.innerHTML = `⚠️ Ошибка загрузки 3D<br><small>model/${id}.${type}</small>`;
+        div.innerHTML = `️ Ошибка загрузки 3D<br><small>model/${id}.${type}</small>`;
         viewerEl.appendChild(div);
     };
     if (type === 'stl') {
