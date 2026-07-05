@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Каталог деталей</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--primary:#2563eb;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--radius:16px;--shadow:0 10px 30px -5px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.wrapper{max-width:1100px;margin:0 auto;padding:40px 20px}
+.controls{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab-btn{padding:10px 18px;border:1px solid var(--border);background:#fff;border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;transition:.2s}
+.tab-btn:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
+.tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(37,99,235,.3)}
+.dropdown{display:none;padding:10px 14px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:14px;min-width:200px}
+.dropdown.show{display:block}
+.btn-toggle{margin-left:auto;padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-size:13px;font-weight:500}
+.btn-toggle:hover{background:#f9fafb;border-color:var(--primary)}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px}
+.card-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.card-header h1{font-size:28px;font-weight:600;margin-bottom:10px}
+.description{color:var(--muted);font-size:15px;line-height:1.7;white-space:pre-wrap;margin-bottom:16px}
+.authors-line{font-size:14px;color:var(--muted);padding-top:12px;border-top:1px dashed var(--border)}
+.author-link{color:var(--primary);text-decoration:underline;cursor:pointer;font-weight:500;margin:0 2px}
+.author-link:hover{opacity:.7;text-decoration:none}
+.media-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.carousel{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#000;border:1px solid var(--border)}
+.carousel-track{display:flex;height:100%;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.carousel-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#111;position:relative}
+.carousel-slide img,.carousel-slide video{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.carousel-placeholder{color:#9ca3af;text-align:center;padding:20px}
+.carousel-placeholder .icon{font-size:56px;margin-bottom:12px;opacity:.5}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.9);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:2;display:flex;align-items:center;justify-content:center;font-size:18px;color:#111}
+.carousel-btn:hover{background:#fff;transform:translateY(-50%) scale(1.05)}
+.carousel-btn:disabled{opacity:.3;cursor:not-allowed}
+.carousel-btn.prev{left:12px}.carousel-btn.next{right:12px}
+.carousel-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
+.carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;border:none;transition:.2s}
+.carousel-dot.active{background:#fff;width:24px;border-radius:4px}
+.carousel-counter{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;z-index:2;backdrop-filter:blur(4px)}
+.video-badge{position:absolute;top:12px;left:12px;background:rgba(239,68,68,.9);color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;z-index:2;pointer-events:none}
+.viewer-box{position:relative;background:#0b1120;border-radius:12px;overflow:hidden;aspect-ratio:4/3;border:1px solid #1f2937}
+.viewer-box canvas{display:block;width:100%!important;height:100%!important}
+.viewer-label{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.1);color:#9ca3af;padding:6px 12px;border-radius:8px;font-size:12px;backdrop-filter:blur(8px);pointer-events:none;z-index:2}
+.viewer-controls{position:absolute;bottom:12px;right:12px;display:flex;gap:8px;z-index:2}
+.viewer-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#9ca3af;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;backdrop-filter:blur(8px);transition:.2s}
+.viewer-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+.viewer-btn.active{background:rgba(96,165,250,.3);color:#fff;border-color:rgba(96,165,250,.5)}
+.viewer-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:14px;text-align:center;padding:20px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+.modal-overlay.open{display:flex;opacity:1}
+.modal-content{background:#fff;border-radius:16px;padding:0;max-width:700px;width:90%;max-height:85vh;position:relative;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);transform:translateY(20px);transition:transform .3s;overflow:hidden;display:flex;flex-direction:column}
+.modal-overlay.open .modal-content{transform:translateY(0)}
+.modal-close{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:50%;border:none;background:rgba(0,0,0,.08);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;transition:.2s;z-index:10}
+.modal-close:hover{background:rgba(0,0,0,.15);transform:rotate(90deg)}
+.modal-iframe{width:100%;flex:1;border:none;min-height:400px;background:#fff}
+.modal-loading{padding:60px 20px;text-align:center;color:var(--muted);font-size:15px}
+.modal-error{padding:40px 20px;text-align:center;color:#dc2626;font-size:14px}
+.error-banner{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px 20px;border-radius:12px;margin-bottom:20px;font-size:14px;display:none;line-height:1.6}
+.error-banner code{background:rgba(0,0,0,.05);padding:2px 6px;border-radius:4px;font-size:13px}
+@media(max-width:768px){.media-grid{grid-template-columns:1fr}.card{padding:24px}.wrapper{padding:20px 16px}.controls{flex-direction:column;align-items:stretch}.btn-toggle{margin-left:0}.modal-content{width:95%;max-height:90vh}}
+</style>
+</head>
+<body>
+<main class="wrapper">
+    <div class="error-banner" id="errorBanner"></div>
+    <nav class="controls">
+        <div class="tabs" id="tabsNav"></div>
+        <select class="dropdown" id="dropdownNav"></select>
+        <button class="btn-toggle" id="switchNav">🔄 Переключить вид</button>
+    </nav>
+    <div class="card">
+        <div class="card-header">
+            <h1 id="modelTitle">Загрузка...</h1>
+            <div class="description" id="modelDesc"></div>
+            <div class="authors-line" id="authorsLine" style="display:none"></div>
+        </div>
+        <div class="media-grid">
+            <div class="carousel" id="carousel">
+                <div class="carousel-track" id="carouselTrack"></div>
+                <button class="carousel-btn prev" id="carouselPrev">‹</button>
+                <button class="carousel-btn next" id="carouselNext">›</button>
+                <div class="carousel-dots" id="carouselDots"></div>
+                <div class="carousel-counter" id="carouselCounter" style="display:none"></div>
+            </div>
+            <div class="viewer-box" id="viewer">
+                <div class="viewer-label">3D • крутите мышкой</div>
+                <div class="viewer-controls">
+                    <button class="viewer-btn" id="btnReset">↺ Сброс</button>
+                    <button class="viewer-btn active" id="btnAutoRotate">⟳ Авто</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<div class="modal-overlay" id="dossierModal">
+    <div class="modal-content">
+        <button class="modal-close" id="modalClose"></button>
+        <div id="modalInner"><div class="modal-loading">Загрузка досье...</div></div>
+    </div>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+
+/* ============================================================
+   🔑 КОНФИГУРАЦИЯ GITHUB
+   Вставьте свои данные ниже
+   ============================================================ */
+const GITHUB_USER = 'ВАШ_НИКНЕЙМ';       // Например: 'ivanov'
+const GITHUB_REPO = 'ИМЯ_РЕПОЗИТОРИЯ';   // Например: 'my-3d-catalog'
+const GITHUB_BRANCH = 'main';            // Обычно 'main' или 'master'
+
+const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}`;
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+const VIDEO_EXTS = ['mp4', 'webm', 'mov'];
+const MODEL_EXTS = ['3mf', 'glb', 'gltf', 'stl'];
+const MAX_MEDIA = 20;
+
+/* ============================================================
+   УТИЛИТЫ ЗАГРУЗКИ (ПРЯМЫЕ ССЫЛКИ, БЕЗ ПРОКСИ)
+   ============================================================ */
+async function fetchText(path) {
+    try {
+        const res = await fetch(`${BASE_URL}/${path}`);
+        return res.ok ? await res.text() : null;
+    } catch { return null; }
+}
+
+async function fileExists(path) {
+    try {
+        const res = await fetch(`${BASE_URL}/${path}`, { method: 'HEAD' });
+        return res.ok;
+    } catch { return false; }
+}
+
+function getFileUrl(path) {
+    return `${BASE_URL}/${path}`;
+}
+
+function showError(msg) {
+    const el = document.getElementById('errorBanner');
+    el.innerHTML = msg;
+    el.style.display = 'block';
+}
+
+/* ============================================================
+   ПАРСИНГ TAB.TXT
+   Формат: Название модели -(ФИО автора)-slug_файла
+   ============================================================ */
+async function loadTabData() {
+    const text = await fetchText('tab.txt');
+    if (text === null) {
+        showError(`❌ Файл <code>tab.txt</code> не найден.<br>Убедитесь, что он лежит в корне репозитория.`);
+        return [];
+    }
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const models = [];
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const match = line.match(/^(.+?)\s*-\((.+?)\)-(.+)$/);
+        if (match) {
+            const title = match[1].trim();
+            const fios = match[2].trim().split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+            const slugs = match[3].trim().split(/[,;]+/).map(s => s.trim()).filter(Boolean);
+            const authors = fios.map((fio, idx) => ({
+                name: fio,
+                slug: slugs[idx] || fio.toLowerCase().replace(/\s+/g, '_')
+            }));
+            models.push({ id: String(i + 1), title, authors });
+        } else {
+            models.push({ id: String(i + 1), title: line, authors: [] });
+        }
+    }
+    return models;
+}
+
+/* ============================================================
+   ЗАГРУЗКА МЕДИА (ФОТО + ВИДЕО)
+   ============================================================ */
+async function loadMedia(id) {
+    const items = [];
+    for (let i = 1; i <= MAX_MEDIA; i++) {
+        let found = null;
+        for (const ext of [...IMAGE_EXTS, ...VIDEO_EXTS]) {
+            const path = `image/${id}/${i}.${ext}`;
+            if (await fileExists(path)) {
+                found = {
+                    url: getFileUrl(path),
+                    type: VIDEO_EXTS.includes(ext) ? 'video' : 'image',
+                    name: `${i}.${ext}`
+                };
+                break;
+            }
+        }
+        if (found) items.push(found);
+        else break;
+    }
+    return items;
+}
+
+/* ============================================================
+   МОДАЛЬНОЕ ОКНО ДОСЬЕ
+   ============================================================ */
+const modalOverlay = document.getElementById('dossierModal');
+const modalInner = document.getElementById('modalInner');
+const modalClose = document.getElementById('modalClose');
+
+async function openDossier(slug) {
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    modalInner.innerHTML = '<div class="modal-loading">Загрузка досье...</div>';
+    
+    const html = await fetchText(`dossier/${slug}.html`);
+    if (html) {
+        modalInner.innerHTML = `<iframe class="modal-iframe" srcdoc="${html.replace(/"/g, '&quot;')}"></iframe>`;
+    } else {
+        modalInner.innerHTML = `<div class="modal-error">❌ Досье не найдено<br><small>dossier/${slug}.html</small></div>`;
+    }
+}
+
+function closeDossier() {
+    modalOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(() => { modalInner.innerHTML = ''; }, 300);
+}
+
+modalClose.onclick = closeDossier;
+modalOverlay.onclick = (e) => { if (e.target === modalOverlay) closeDossier(); };
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDossier(); });
+
+/* ============================================================
+   РЕНДЕР ОПИСАНИЯ И АВТОРОВ
+   ============================================================ */
+function renderDescriptionAndAuthors(descContainer, authorsContainer, description, authors) {
+    descContainer.textContent = description || '—';
+    if (!authors || authors.length === 0) { authorsContainer.style.display = 'none'; return; }
+    authorsContainer.style.display = 'block';
+    authorsContainer.innerHTML = '';
+    authorsContainer.appendChild(document.createTextNode(
+        authors.length > 1 ? 'Конструкция выполнена авторами: ' : 'Конструкция выполнена автором: '
+    ));
+    authors.forEach((author, i) => {
+        if (i > 0) authorsContainer.appendChild(document.createTextNode(', '));
+        const link = document.createElement('span');
+        link.className = 'author-link';
+        link.textContent = author.name;
+        link.onclick = () => openDossier(author.slug);
+        authorsContainer.appendChild(link);
+    });
+}
+
+/* ============================================================
+   КАРУСЕЛЬ
+   ============================================================ */
+const carouselTrack = document.getElementById('carouselTrack');
+const carouselPrev = document.getElementById('carouselPrev');
+const carouselNext = document.getElementById('carouselNext');
+const carouselDots = document.getElementById('carouselDots');
+const carouselCounter = document.getElementById('carouselCounter');
+let mediaItems = [], mediaIndex = 0;
+
+function pauseAllVideos() {
+    carouselTrack.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
+}
+
+function updateCarousel() {
+    pauseAllVideos();
+    carouselTrack.style.transform = `translateX(-${mediaIndex * 100}%)`;
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === mediaIndex));
+    carouselPrev.disabled = mediaIndex === 0;
+    carouselNext.disabled = mediaIndex === mediaItems.length - 1;
+    carouselCounter.style.display = mediaItems.length > 1 ? 'block' : 'none';
+    if (mediaItems.length > 1) carouselCounter.textContent = `${mediaIndex + 1}/${mediaItems.length}`;
+    const slide = carouselTrack.children[mediaIndex];
+    if (slide) { const v = slide.querySelector('video'); if (v) v.play().catch(() => {}); }
+}
+
+function renderCarousel(items, currentId) {
+    mediaItems = items; mediaIndex = 0;
+    carouselTrack.innerHTML = ''; carouselDots.innerHTML = '';
+    if (!items.length) {
+        carouselTrack.innerHTML = `<div class="carousel-slide"><div class="carousel-placeholder"><div class="icon">️</div><div>Нет медиафайлов<br><small>image/${currentId}/</small></div></div></div>`;
+        carouselPrev.style.display = 'none'; carouselNext.style.display = 'none';
+        return;
+    }
+    carouselPrev.style.display = 'flex'; carouselNext.style.display = 'flex';
+    items.forEach((item, i) => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        if (item.type === 'video') {
+            const badge = document.createElement('div');
+            badge.className = 'video-badge'; badge.textContent = '▶ VIDEO';
+            slide.appendChild(badge);
+            const video = document.createElement('video');
+            video.src = item.url; video.controls = true; video.loop = true;
+            video.muted = true; video.playsInline = true; video.preload = 'metadata';
+            slide.appendChild(video);
+        } else {
+            const img = document.createElement('img');
+            img.src = item.url; img.alt = item.name; img.loading = 'lazy';
+            slide.appendChild(img);
+        }
+        carouselTrack.appendChild(slide);
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        dot.onclick = () => { mediaIndex = i; updateCarousel(); };
+        carouselDots.appendChild(dot);
+    });
+    updateCarousel();
+}
+
+carouselPrev.onclick = () => { if (mediaIndex > 0) { mediaIndex--; updateCarousel(); } };
+carouselNext.onclick = () => { if (mediaIndex < mediaItems.length - 1) { mediaIndex++; updateCarousel(); } };
+
+/* ============================================================
+   THREE.JS VIEWER
+   ============================================================ */
+const viewerEl = document.getElementById('viewer');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b1120);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 10000);
+camera.position.set(3, 2, 4);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+viewerEl.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = 0.05;
+controls.autoRotate = true; controls.autoRotateSpeed = 2;
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dl = new THREE.DirectionalLight(0xffffff, 1.2); dl.position.set(5, 5, 5); scene.add(dl);
+const dl2 = new THREE.DirectionalLight(0x88aaff, 0.4); dl2.position.set(-5, -3, -5); scene.add(dl2);
+const grid = new THREE.GridHelper(8, 16, 0x1e293b, 0x1e293b); grid.position.y = -1.5; scene.add(grid);
+
+let currentModel = null;
+const loaders = {
+    '3mf': new ThreeMFLoader(),
+    'glb': new GLTFLoader(),
+    'gltf': new GLTFLoader(),
+    'stl': new STLLoader()
+};
+
+function fitCamera(obj) {
+    const box = new THREE.Box3().setFromObject(obj);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    obj.position.sub(center);
+    const maxDim = Math.max(size.x, size.y, size.z);
+    if (maxDim === 0) return;
+    const dist = (maxDim / 2) / Math.tan(camera.fov * Math.PI / 360) * 1.6;
+    camera.position.set(dist * 0.7, dist * 0.5, dist);
+    camera.near = maxDim / 100; camera.far = maxDim * 100;
+    camera.updateProjectionMatrix();
+    controls.target.set(0, 0, 0); controls.update();
+}
+
+function removeModel() {
+    if (currentModel) {
+        scene.remove(currentModel);
+        currentModel.traverse(c => {
+            if (c.geometry) c.geometry.dispose();
+            if (c.material) (Array.isArray(c.material) ? c.material : [c.material]).forEach(m => m.dispose());
+        });
+        currentModel = null;
+    }
+    viewerEl.querySelector('.viewer-placeholder')?.remove();
+}
+
+async function load3D(id) {
+    removeModel();
+    let foundModel = null;
+    for (const ext of MODEL_EXTS) {
+        const path = `model/${id}.${ext}`;
+        if (await fileExists(path)) {
+            foundModel = { url: getFileUrl(path), type: ext };
+            break;
+        }
+    }
+    if (!foundModel) {
+        const div = document.createElement('div');
+        div.className = 'viewer-placeholder';
+        div.innerHTML = `⚠️ 3D модель не найдена<br><small>model/${id}.*</small>`;
+        viewerEl.appendChild(div);
+        return;
+    }
+    const { url, type } = foundModel;
+    const onLoad = (obj) => {
+        currentModel = obj;
+        currentModel.traverse(c => {
+            if (c.isMesh && (!c.material || c.material.color?.getHex() === 0xffffff)) {
+                c.material = new THREE.MeshStandardMaterial({ color: 0x60a5fa, metalness: 0.3, roughness: 0.6 });
+            }
+        });
+        scene.add(currentModel); fitCamera(currentModel);
+    };
+    const onError = () => {
+        const div = document.createElement('div');
+        div.className = 'viewer-placeholder';
+        div.innerHTML = `⚠️ Ошибка загрузки 3D<br><small>model/${id}.${type}</small>`;
+        viewerEl.appendChild(div);
+    };
+    if (type === 'stl') {
+        loaders.stl.load(url, geo => {
+            geo.computeVertexNormals();
+            onLoad(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x60a5fa, metalness: 0.3, roughness: 0.6 })));
+        }, undefined, onError);
+    } else {
+        loaders[type].load(url, data => {
+            onLoad((type === 'glb' || type === 'gltf') ? data.scene : data);
+        }, undefined, onError);
+    }
+}
+
+/* ============================================================
+   ОСНОВНАЯ ЛОГИКА
+   ============================================================ */
+const titleEl = document.getElementById('modelTitle');
+const descEl = document.getElementById('modelDesc');
+const authorsLine = document.getElementById('authorsLine');
+const tabsEl = document.getElementById('tabsNav');
+const dropdownEl = document.getElementById('dropdownNav');
+let modelsData = [], isTabsMode = true;
+
+async function loadModel(config) {
+    pauseAllVideos();
+    titleEl.textContent = config.title;
+    descEl.textContent = 'Загрузка...';
+    authorsLine.style.display = 'none';
+    document.querySelectorAll('.tab-btn').forEach((b, i) =>
+        b.classList.toggle('active', modelsData[i]?.id === config.id)
+    );
+    dropdownEl.value = config.id;
+
+    const [description, media] = await Promise.all([
+        fetchText(`obr/${config.id}.txt`),
+        loadMedia(config.id)
+    ]);
+
+    renderDescriptionAndAuthors(descEl, authorsLine, description ? description.trim() : '', config.authors);
+    renderCarousel(media, config.id);
+    load3D(config.id);
+}
+
+(async () => {
+    if (GITHUB_USER === 'ВАШ_НИКНЕЙМ') {
+        showError('⚠️ <b>Настройки GitHub не заполнены.</b><br>Откройте исходный код и замените <code>GITHUB_USER</code>, <code>GITHUB_REPO</code> на ваши данные.');
+    }
+    modelsData = await loadTabData();
+    if (!modelsData.length) {
+        tabsEl.innerHTML = '<div class="tab-btn">Нет данных</div>';
+        titleEl.textContent = 'Нет моделей';
+        descEl.textContent = 'Проверьте tab.txt в репозитории';
+        return;
+    }
+    modelsData.forEach((model, i) => {
+        const btn = document.createElement('button');
+        btn.className = `tab-btn ${i === 0 ? 'active' : ''}`;
+        btn.textContent = model.title;
+        btn.onclick = () => loadModel(model);
+        tabsEl.appendChild(btn);
+        const opt = document.createElement('option');
+        opt.value = model.id; opt.textContent = model.title;
+        dropdownEl.appendChild(opt);
+    });
+    dropdownEl.onchange = (e) => {
+        const m = modelsData.find(x => x.id === e.target.value);
+        if (m) loadModel(m);
+    };
+    document.getElementById('switchNav').onclick = () => {
+        isTabsMode = !isTabsMode;
+        tabsEl.style.display = isTabsMode ? 'flex' : 'none';
+        dropdownEl.classList.toggle('show', !isTabsMode);
+    };
+    document.getElementById('btnReset').onclick = () => { if (currentModel) fitCamera(currentModel); };
+    const btnAuto = document.getElementById('btnAutoRotate');
+    btnAuto.onclick = () => {
+        controls.autoRotate = !controls.autoRotate;
+        btnAuto.classList.toggle('active', controls.autoRotate);
+    };
+    function resize() {
+        const w = viewerEl.clientWidth, h = viewerEl.clientHeight;
+        camera.aspect = w / h; camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+    }
+    window.addEventListener('resize', resize); resize();
+    (function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    })();
+    loadModel(modelsData[0]);
+})();
+</script>
+</body>
+</html>
