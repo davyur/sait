@@ -8,9 +8,11 @@
 :root{--bg:#f3f4f6;--card:#fff;--primary:#2563eb;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--radius:16px;--shadow:0 10px 30px -5px rgba(0,0,0,.08)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
-.wrapper{max-width:1100px;margin:0 auto;padding:40px 20px}
+.wrapper{max-width:1200px;margin:0 auto;padding:40px 20px}
+
+/* ===== Навигация ===== */
 .controls{display:flex;gap:12px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
-.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;flex:1}
 .tab-btn{padding:10px 18px;border:1px solid var(--border);background:#fff;border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;transition:.2s}
 .tab-btn:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
 .tab-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 12px rgba(37,99,235,.3)}
@@ -18,49 +20,89 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:v
 .dropdown.show{display:block}
 .btn-toggle{margin-left:auto;padding:10px 16px;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-size:13px;font-weight:500}
 .btn-toggle:hover{background:#f9fafb;border-color:var(--primary)}
+
+/* ===== Навигация между памятниками ===== */
+.nav-arrows{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px;padding:16px;background:var(--card);border-radius:12px;box-shadow:var(--shadow)}
+.nav-btn{padding:10px 20px;border:1px solid var(--border);background:#fff;border-radius:10px;cursor:pointer;font-weight:500;font-size:14px;transition:.2s}
+.nav-btn:hover:not(:disabled){background:var(--primary);color:#fff;border-color:var(--primary)}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+.nav-counter{font-weight:600;font-size:16px;color:var(--text);min-width:120px;text-align:center}
+
+/* ===== Карточка ===== */
 .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px}
 .card-header{margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.card-header h1{font-size:28px;font-weight:600;margin-bottom:10px}
+.card-header h1{font-size:32px;font-weight:600;margin-bottom:10px}
 .description{color:var(--muted);font-size:15px;line-height:1.7;white-space:pre-wrap;margin-bottom:16px}
 .authors-line{font-size:14px;color:var(--muted);padding-top:12px;border-top:1px dashed var(--border);font-weight:500}
 
-.media-container{width:100%}
-.carousel{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;border:1px solid var(--border)}
+/* ===== Фотографии (увеличенный размер) ===== */
+.media-container{width:100%;margin-bottom:32px}
+.carousel{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;background:#000;border:1px solid var(--border)}
 .carousel-track{display:flex;height:100%;transition:transform .4s cubic-bezier(.4,0,.2,1)}
 .carousel-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#111;position:relative}
-.carousel-slide img,.carousel-slide video{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.carousel-slide img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 .carousel-placeholder{color:#9ca3af;text-align:center;padding:20px}
 .carousel-placeholder .icon{font-size:56px;margin-bottom:12px;opacity:.5}
-.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.9);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:2;display:flex;align-items:center;justify-content:center;font-size:18px;color:#111}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.9);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:2;display:flex;align-items:center;justify-content:center;font-size:20px;color:#111}
 .carousel-btn:hover{background:#fff;transform:translateY(-50%) scale(1.05)}
 .carousel-btn:disabled{opacity:.3;cursor:not-allowed}
 .carousel-btn.prev{left:12px}.carousel-btn.next{right:12px}
 .carousel-dots{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2}
 .carousel-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;border:none;transition:.2s}
 .carousel-dot.active{background:#fff;width:24px;border-radius:4px}
-.carousel-counter{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);color:#fff;padding:4px 10px;border-radius:12px;font-size:12px;z-index:2;backdrop-filter:blur(4px)}
-.video-badge{position:absolute;top:12px;left:12px;background:rgba(239,68,68,.9);color:#fff;padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700;z-index:2;pointer-events:none}
+.carousel-counter{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.6);color:#fff;padding:6px 12px;border-radius:12px;font-size:13px;z-index:2;backdrop-filter:blur(4px)}
 
+/* ===== Литература ===== */
+.literature-section{margin-top:32px;padding-top:24px;border-top:2px solid var(--border)}
+.literature-section h2{font-size:22px;font-weight:600;margin-bottom:16px;color:var(--text);display:flex;align-items:center;gap:8px}
+.literature-list{list-style:none;display:grid;gap:12px}
+.literature-item{padding:14px 18px;background:var(--bg);border-radius:10px;border-left:4px solid var(--primary);transition:.2s}
+.literature-item:hover{background:#e5e7eb;transform:translateX(4px)}
+.literature-item a{color:var(--primary);text-decoration:none;font-weight:500;font-size:15px;display:flex;align-items:center;gap:8px}
+.literature-item a:hover{text-decoration:underline}
+.literature-item a::before{content:'📚';font-size:16px}
+.literature-empty{color:var(--muted);font-style:italic;padding:20px;text-align:center}
+
+/* ===== Ошибки ===== */
 .error-banner{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:16px 20px;border-radius:12px;margin-bottom:20px;font-size:14px;display:none;line-height:1.6}
 .error-banner code{background:rgba(0,0,0,.05);padding:2px 6px;border-radius:4px;font-size:13px}
 
-@media(max-width:768px){.card{padding:24px}.wrapper{padding:20px 16px}.controls{flex-direction:column;align-items:stretch}.btn-toggle{margin-left:0}.carousel{aspect-ratio:4/3}}
+@media(max-width:768px){
+    .card{padding:24px}
+    .wrapper{padding:20px 16px}
+    .controls{flex-direction:column;align-items:stretch}
+    .btn-toggle{margin-left:0}
+    .carousel{aspect-ratio:1/1}
+    .card-header h1{font-size:24px}
+    .nav-arrows{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
 <main class="wrapper">
     <div class="error-banner" id="errorBanner"></div>
+    
+    <!-- Навигация между памятниками -->
+    <div class="nav-arrows">
+        <button class="nav-btn" id="navPrev">← Предыдущий</button>
+        <div class="nav-counter" id="navCounter">0 из 0</div>
+        <button class="nav-btn" id="navNext">Следующий →</button>
+    </div>
+    
     <nav class="controls">
         <div class="tabs" id="tabsNav"></div>
         <select class="dropdown" id="dropdownNav"></select>
         <button class="btn-toggle" id="switchNav">🔄 Переключить вид</button>
     </nav>
+    
     <div class="card">
         <div class="card-header">
             <h1 id="modelTitle">Загрузка...</h1>
             <div class="description" id="modelDesc"></div>
             <div class="authors-line" id="authorsLine" style="display:none"></div>
         </div>
+        
+        <!-- Фотографии -->
         <div class="media-container">
             <div class="carousel" id="carousel">
                 <div class="carousel-track" id="carouselTrack"></div>
@@ -70,6 +112,14 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:v
                 <div class="carousel-counter" id="carouselCounter" style="display:none"></div>
             </div>
         </div>
+        
+        <!-- Литература -->
+        <div class="literature-section">
+            <h2>📖 Использованная литература</h2>
+            <ul class="literature-list" id="literatureList">
+                <li class="literature-empty">Загрузка...</li>
+            </ul>
+        </div>
     </div>
 </main>
 
@@ -77,13 +127,12 @@ body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:v
 /* ============================================================
    КОНФИГУРАЦИЯ GITHUB
    ============================================================ */
-const GITHUB_USER = 'davyur';          // Ваш логин GitHub
-const GITHUB_REPO = 'marculexp';       // Название репозитория
-const GITHUB_BRANCH = 'master';          // Если не работает — попробуйте 'master'
+const GITHUB_USER = 'davyur';
+const GITHUB_REPO = 'marculexp';
+const GITHUB_BRANCH = 'main';
 
 const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}`;
 const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
-const VIDEO_EXTS = ['mp4', 'webm', 'mov'];
 const MAX_MEDIA = 20;
 
 /* ============================================================
@@ -115,8 +164,7 @@ function showError(msg) {
 
 /* ============================================================
    ПАРСИНГ tab.txt
-   Формат: Название-(Автор)-любой_текст
-   Пример: Храм-(Юрков Давид)-ivanov
+   Формат: Название-(Автор)-slug
    ============================================================ */
 async function loadTabData() {
     const text = await fetchText('tab.txt');
@@ -129,8 +177,7 @@ async function loadTabData() {
     
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const id = String(i + 1); 
-        
+        const id = String(i + 1);
         const match = line.match(/^(.+?)\s*-\((.+?)\)/);
         if (match) {
             const title = match[1].trim();
@@ -144,26 +191,49 @@ async function loadTabData() {
 }
 
 /* ============================================================
-   ЗАГРУЗКА МЕДИА (ФОТО + ВИДЕО)
-   Ищет файлы в папке image/{id}/ (1.jpg, 2.mp4 и т.д.)
+   ЗАГРУЗКА ФОТОГРАФИЙ
    ============================================================ */
 async function loadMedia(id) {
     const items = [];
     for (let i = 1; i <= MAX_MEDIA; i++) {
         let found = null;
-        for (const ext of [...IMAGE_EXTS, ...VIDEO_EXTS]) {
+        for (const ext of IMAGE_EXTS) {
             const path = `image/${id}/${i}.${ext}`;
             if (await fileExists(path)) {
-                found = {
-                    url: getFileUrl(path),
-                    type: VIDEO_EXTS.includes(ext) ? 'video' : 'image',
-                    name: `${i}.${ext}`
-                };
+                found = { url: getFileUrl(path), name: `${i}.${ext}` };
                 break;
             }
         }
         if (found) items.push(found);
-        else break; 
+        else break;
+    }
+    return items;
+}
+
+/* ============================================================
+   ЗАГРУЗКА ЛИТЕРАТУРЫ ИЗ CSV
+   Формат CSV: Название источника;https://ссылка.com
+   ============================================================ */
+async function loadLiterature(id) {
+    const text = await fetchText(`literature/${id}.csv`);
+    if (!text) return [];
+    
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    const items = [];
+    
+    for (const line of lines) {
+        // Пропускаем заголовок (первая строка)
+        if (line.toLowerCase().startsWith('название источника;')) continue;
+        
+        // Разделяем по точке с запятой
+        const parts = line.split(';');
+        if (parts.length >= 2) {
+            const name = parts[0].trim();
+            const url = parts[1].trim();
+            if (name && url) {
+                items.push({ name, url });
+            }
+        }
     }
     return items;
 }
@@ -173,16 +243,38 @@ async function loadMedia(id) {
    ============================================================ */
 function renderDescriptionAndAuthors(descContainer, authorsContainer, description, authorName) {
     descContainer.textContent = description || 'Описание отсутствует.';
-    if (!authorName) { 
-        authorsContainer.style.display = 'none'; 
-        return; 
+    if (!authorName) {
+        authorsContainer.style.display = 'none';
+        return;
     }
     authorsContainer.style.display = 'block';
     authorsContainer.textContent = `Конструкция выполнена автором: ${authorName}`;
 }
 
 /* ============================================================
-   КАРУСЕЛЬ
+   РЕНДЕР ЛИТЕРАТУРЫ
+   ============================================================ */
+function renderLiterature(container, items) {
+    container.innerHTML = '';
+    if (!items.length) {
+        container.innerHTML = '<li class="literature-empty">Литература не добавлена</li>';
+        return;
+    }
+    items.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'literature-item';
+        const a = document.createElement('a');
+        a.href = item.url;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        a.textContent = item.name;
+        li.appendChild(a);
+        container.appendChild(li);
+    });
+}
+
+/* ============================================================
+   КАРУСЕЛЬ ФОТО
    ============================================================ */
 const carouselTrack = document.getElementById('carouselTrack');
 const carouselPrev = document.getElementById('carouselPrev');
@@ -191,58 +283,39 @@ const carouselDots = document.getElementById('carouselDots');
 const carouselCounter = document.getElementById('carouselCounter');
 let mediaItems = [], mediaIndex = 0;
 
-function pauseAllVideos() {
-    carouselTrack.querySelectorAll('video').forEach(v => { v.pause(); v.currentTime = 0; });
-}
-
 function updateCarousel() {
-    pauseAllVideos();
     carouselTrack.style.transform = `translateX(-${mediaIndex * 100}%)`;
     document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === mediaIndex));
     carouselPrev.disabled = mediaIndex === 0;
     carouselNext.disabled = mediaIndex === mediaItems.length - 1;
     carouselCounter.style.display = mediaItems.length > 1 ? 'block' : 'none';
-    if (mediaItems.length > 1) carouselCounter.textContent = `${mediaIndex + 1}/${mediaItems.length}`;
-    
-    const slide = carouselTrack.children[mediaIndex];
-    if (slide) { 
-        const v = slide.querySelector('video'); 
-        if (v) v.play().catch(() => {}); 
-    }
+    if (mediaItems.length > 1) carouselCounter.textContent = `${mediaIndex + 1} / ${mediaItems.length}`;
 }
 
 function renderCarousel(items, currentId) {
-    mediaItems = items; 
+    mediaItems = items;
     mediaIndex = 0;
-    carouselTrack.innerHTML = ''; 
+    carouselTrack.innerHTML = '';
     carouselDots.innerHTML = '';
     
     if (!items.length) {
-        carouselTrack.innerHTML = `<div class="carousel-slide"><div class="carousel-placeholder"><div class="icon">🖼️</div><div>Нет медиафайлов<br><small>image/${currentId}/</small></div></div></div>`;
-        carouselPrev.style.display = 'none'; 
+        carouselTrack.innerHTML = `<div class="carousel-slide"><div class="carousel-placeholder"><div class="icon">🖼️</div><div>Нет фотографий<br><small>image/${currentId}/</small></div></div></div>`;
+        carouselPrev.style.display = 'none';
         carouselNext.style.display = 'none';
         return;
     }
     
-    carouselPrev.style.display = 'flex'; 
+    carouselPrev.style.display = 'flex';
     carouselNext.style.display = 'flex';
     
     items.forEach((item, i) => {
         const slide = document.createElement('div');
         slide.className = 'carousel-slide';
-        if (item.type === 'video') {
-            const badge = document.createElement('div');
-            badge.className = 'video-badge'; badge.textContent = '▶ VIDEO';
-            slide.appendChild(badge);
-            const video = document.createElement('video');
-            video.src = item.url; video.controls = true; video.loop = true;
-            video.muted = true; video.playsInline = true; video.preload = 'metadata';
-            slide.appendChild(video);
-        } else {
-            const img = document.createElement('img');
-            img.src = item.url; img.alt = item.name; img.loading = 'lazy';
-            slide.appendChild(img);
-        }
+        const img = document.createElement('img');
+        img.src = item.url;
+        img.alt = item.name;
+        img.loading = 'lazy';
+        slide.appendChild(img);
         carouselTrack.appendChild(slide);
         
         const dot = document.createElement('button');
@@ -257,6 +330,34 @@ carouselPrev.onclick = () => { if (mediaIndex > 0) { mediaIndex--; updateCarouse
 carouselNext.onclick = () => { if (mediaIndex < mediaItems.length - 1) { mediaIndex++; updateCarousel(); } };
 
 /* ============================================================
+   НАВИГАЦИЯ МЕЖДУ ПАМЯТНИКАМИ
+   ============================================================ */
+const navPrev = document.getElementById('navPrev');
+const navNext = document.getElementById('navNext');
+const navCounter = document.getElementById('navCounter');
+let currentIndex = 0;
+
+function updateNavCounter() {
+    navCounter.textContent = `${currentIndex + 1} из ${modelsData.length}`;
+    navPrev.disabled = currentIndex === 0;
+    navNext.disabled = currentIndex === modelsData.length - 1;
+}
+
+navPrev.onclick = () => {
+    if (currentIndex > 0) {
+        currentIndex--;
+        loadModel(modelsData[currentIndex]);
+    }
+};
+
+navNext.onclick = () => {
+    if (currentIndex < modelsData.length - 1) {
+        currentIndex++;
+        loadModel(modelsData[currentIndex]);
+    }
+};
+
+/* ============================================================
    ОСНОВНАЯ ЛОГИКА
    ============================================================ */
 const titleEl = document.getElementById('modelTitle');
@@ -264,34 +365,44 @@ const descEl = document.getElementById('modelDesc');
 const authorsLine = document.getElementById('authorsLine');
 const tabsEl = document.getElementById('tabsNav');
 const dropdownEl = document.getElementById('dropdownNav');
+const literatureList = document.getElementById('literatureList');
 let modelsData = [], isTabsMode = true;
 
 async function loadModel(config) {
-    pauseAllVideos();
     titleEl.textContent = config.title;
     descEl.textContent = 'Загрузка описания...';
     authorsLine.style.display = 'none';
+    literatureList.innerHTML = '<li class="literature-empty">Загрузка литературы...</li>';
     
+    // Обновляем активную вкладку
     document.querySelectorAll('.tab-btn').forEach((b, i) =>
         b.classList.toggle('active', modelsData[i]?.id === config.id)
     );
     dropdownEl.value = config.id;
+    
+    // Обновляем индекс для навигации
+    currentIndex = modelsData.findIndex(m => m.id === config.id);
+    updateNavCounter();
 
-    const [description, media] = await Promise.all([
+    // Загружаем всё параллельно
+    const [description, media, literature] = await Promise.all([
         fetchText(`obr/${config.id}.txt`),
-        loadMedia(config.id)
+        loadMedia(config.id),
+        loadLiterature(config.id)
     ]);
 
     renderDescriptionAndAuthors(descEl, authorsLine, description ? description.trim() : '', config.author);
     renderCarousel(media, config.id);
+    renderLiterature(literatureList, literature);
 }
 
 (async () => {
     modelsData = await loadTabData();
     if (!modelsData.length) {
         tabsEl.innerHTML = '<div class="tab-btn">Нет данных</div>';
-        titleEl.textContent = 'Нет моделей';
+        titleEl.textContent = 'Нет памятников';
         descEl.textContent = 'Проверьте файл tab.txt в корне репозитория';
+        navCounter.textContent = '0 из 0';
         return;
     }
     
@@ -299,7 +410,7 @@ async function loadModel(config) {
         const btn = document.createElement('button');
         btn.className = `tab-btn ${i === 0 ? 'active' : ''}`;
         btn.textContent = model.title;
-        btn.onclick = () => loadModel(model);
+        btn.onclick = () => { currentIndex = i; loadModel(model); };
         tabsEl.appendChild(btn);
         
         const opt = document.createElement('option');
@@ -309,7 +420,7 @@ async function loadModel(config) {
     
     dropdownEl.onchange = (e) => {
         const m = modelsData.find(x => x.id === e.target.value);
-        if (m) loadModel(m);
+        if (m) { currentIndex = modelsData.indexOf(m); loadModel(m); }
     };
     
     document.getElementById('switchNav').onclick = () => {
@@ -318,6 +429,7 @@ async function loadModel(config) {
         dropdownEl.classList.toggle('show', !isTabsMode);
     };
     
+    updateNavCounter();
     loadModel(modelsData[0]);
 })();
 </script>
