@@ -122,28 +122,16 @@ const GITHUB_REPO = 'sait';
 const GITHUB_BRANCH = 'main';
 
 const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}`;
+const API_BASE = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents`;
 
-// Оба регистра расширений — чтобы работало и с .JPG, и с .jpg, и с .Mp4 и т.д.
-const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif', 'JPG', 'JPEG', 'PNG', 'WEBP', 'AVIF', 'Jpg', 'Jpeg', 'Png'];
-const VIDEO_EXTS = ['mp4', 'webm', 'mov', 'MP4', 'WEBM', 'MOV', 'Mp4'];
-const MAX_MEDIA = 30; // Увеличил лимит, чтобы точно найти все файлы
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
+const VIDEO_EXTS = ['mp4', 'webm', 'mov'];
 
 async function fetchText(path) {
     try {
         const res = await fetch(`${BASE_URL}/${path}?t=${Date.now()}`);
         return res.ok ? await res.text() : null;
     } catch { return null; }
-}
-
-async function fileExists(path) {
-    try {
-        const res = await fetch(`${BASE_URL}/${path}?t=${Date.now()}`, { method: 'GET' });
-        return res.ok && res.status === 200;
-    } catch { return false; }
-}
-
-function getFileUrl(path) {
-    return `${BASE_URL}/${path}`;
 }
 
 function showError(msg) {
@@ -176,26 +164,39 @@ async function loadTabData() {
     return models;
 }
 
-// Улучшенная загрузка медиа: не прерывается при пропуске номера
+// ✅ НОВАЯ ФУНКЦИЯ: использует GitHub API для получения реальных имён файлов
 async function loadMedia(id) {
     const items = [];
-    const allExts = [...IMAGE_EXTS, ...VIDEO_EXTS];
     
-    // Ищем файлы с номерами от 1 до MAX_MEDIA
-    for (let i = 1; i <= MAX_MEDIA; i++) {
-        for (const ext of allExts) {
-            const path = `image/${id}/${i}.${ext}`;
-            if (await fileExists(path)) {
-                const isVideo = VIDEO_EXTS.includes(ext);
+    try {
+        const res = await fetch(`${API_BASE}/image/${id}?t=${Date.now()}`);
+        if (!res.ok) return items;
+        
+        const files = await res.json();
+        if (!Array.isArray(files)) return items;
+        
+        // Сортируем по имени с учётом чисел (1.JPG, 2.mp4, 3.JPG)
+        files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+        
+        for (const file of files) {
+            if (file.type !== 'file') continue;
+            
+            const ext = file.name.split('.').pop().toLowerCase();
+            const isImage = IMAGE_EXTS.includes(ext);
+            const isVideo = VIDEO_EXTS.includes(ext);
+            
+            if (isImage || isVideo) {
                 items.push({
-                    url: getFileUrl(path),
+                    url: file.download_url, // Прямая ссылка на файл
                     type: isVideo ? 'video' : 'image',
-                    name: `${i}.${ext}`
+                    name: file.name
                 });
-                break; // Нашли файл с этим номером — переходим к следующему
             }
         }
+    } catch (err) {
+        console.error('Ошибка загрузки медиа:', err);
     }
+    
     return items;
 }
 
